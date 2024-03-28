@@ -1,49 +1,53 @@
 # Socket programming
 
 ### create a server_socket
-server_socket: specify internet protocol and communication protocol
+To create a server socket, you need to specify the internet protocol (IP) version and the communication protocol. In Python, you can use the socket module to create sockets. Here are the commonly used parameters for creating a server socket:
 
-(IP version _ transmission type): 
-1. IPv4: AF_INET
-2. TCP: SOCK_STREAM
-3. UDP: SOCK_DGRAM
-
-### Specify IP address and PORT number
-
-NOTE: IP address might change on server, use take system IP address dynamically
-
+IP version: AF_INET for IPv4
+Transmission type: SOCK_STREAM for TCP, SOCK_DGRAM for UDP
 ```
 import socket
+
+# Create a server socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+```
+
+### Specify IP address and PORT number
+To specify the IP address and port number for the server socket, you can use the bind() method. The IP address can be dynamically obtained using the gethostbyname() method. Here's an example:
+
+file: server.py
+```
+import socket
+
+# Create a server socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Get the host IP address dynamically
 host_name = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
-print("host name: " + host_name + "\n" + "host ip: " + host_ip)
-```
-##
-### Bind IP and PORT for server_socket
+print("Host name: " + host_name + "\nHost IP: " + host_ip)
 
-```
-# server.py
-server_ip = socket.gethostbyname(socket.gethostname())
-port = 1234    # choose a random port number
-server_socket.bind((server_ip, port_number))
+# Specify the IP address and port number
+port = 1234    # Choose a random port number
+server_socket.bind((host_ip, port))
 ```
 
-NOTE: check if *PORT* number is not bind by any other process
-
-#### check if *PORT* number is not bind by any other process
+#### Make sure that the port number you choose is not already bound by any other process on your system.
 <!-- if case code to check this part automatically -->
 > Windows -> powershell -> netstat -ano | select-string <port_number> 
 
 > Linux -> terminal -> netstat -tulpn | grep <port_number>
 
-### Put the server_socket in listening mode for any possible connection
+### Putting the Server Socket in Listening Mode
+Before accepting connections from clients, you need to put the server socket in listening mode. You can use the listen() method for this purpose.
 
 ```
 # server.py
 server_socket.listen()
 ```
 
-### Server listen for ever to accept any connection
+### Accepting Client Connections
+To accept client connections, you can use the accept() method. It returns a client socket object and the client's address. You can use the client socket object to send and receive data with the client.
 
 ```
 # server.py
@@ -51,7 +55,9 @@ while True:
     client_socket, client address = server_socket.accept()
 ```
 
-### Send message to client
+### Send messages to client
+Once a client connection is established, you can send messages to the client using the client socket. Messages are typically encoded before sending and decoded on the receiving end.
+
 ```
 # server.py
 while True:
@@ -60,8 +66,8 @@ while True:
     client_socket.send("Welcome!".encode("utf-8")) # encode the message
 ```
 
-### Setup client socket 
-connect client socket to server IP and PORT
+### Setting Up the Client Socket
+To connect the client socket to the server IP address and port number, you can use the connect() method.
 
 ```
 # client.py
@@ -70,20 +76,24 @@ port_number = <server_port_number>
 client_socket.connect((ip_address, port_number))
 ```
 
-### Receive message from server
+### Receiving Messages from the Server
+To receive messages from the server, you can use the recv() method on the client socket. The method takes the maximum number of bytes to receive as an argument. The received message is typically decoded before using it.
+
 ```
 # client.py
 msg = client_socket.recv(1024) # 1024: max Bytes client receives
 print(msg.decode('utf-8')) # decode the message
 ```
 
-### close the connection
+### Closing the Connection
+To close the connection, you can use the close() method on the server socket or client socket.
+
 > server.py --> server_socket.close()
 
 > client.py --> client_socket.close()
 
-## Complete code *session 1*
-### server.py 
+## Example code *server* in python
+
 ```
 import socket
 
@@ -108,8 +118,9 @@ while True:
     
     server_socket.close()
 ```
-##
-### client.py
+
+## Example code *client* in python
+
 ```
 import socket
 
@@ -129,9 +140,3 @@ print(msg.decode("utf-8"))
 
 client_socket.close()
 ```
-##
-
-
-
-
-
